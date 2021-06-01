@@ -1,6 +1,6 @@
-papitas, 12.000000, 45
+papitas, 12.000000, 39
 paletas rojas, 1.000000, 7
-colores mapita, 23.000000, 13
+colores mapita, 23.000000, 12
 manzanas, 3.000000, 7
 televisiones, 4000.000000, 6
-juego mario bros, 100.000000, 77
+juego mario bros, 100.000000, 68

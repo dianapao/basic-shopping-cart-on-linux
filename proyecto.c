@@ -21,6 +21,8 @@ void Actualizar_Producto();
 short int Total_Lineas();
 void Agregar_Carrito();
 double Total_Ticket(int);
+void Guardar_Ticket(char original[30]);
+
 /*****Variables Globales*****/
 char nombreg[50],correog[50],passwordg[20],a;
 int sesion=0,opcion,compra;
@@ -102,7 +104,7 @@ void *HiloCatalogo(){
 		exit(1);
 	}
 	printf("*****Catalogo*****\n");
-	printf("PRODUCTO\tPRECIO \tExistencia \n");
+	printf("PRODUCTO\tPRECIO\tExistencia \n");
 	fgets(texto,100,catalogo);
 	while(feof(catalogo)==0){
 		printf("%s",texto);
@@ -184,7 +186,7 @@ void Proceso_Sesion(){
 	fflush(stdin);
 	fgets(correo,50,stdin); //Se llama 2 veces debido a que detecta el salto de linea anterior
 	fgets(correo,50,stdin);
-	printf("Introduzca una contrasena.\n");
+	printf("Introduzca su contrasena.\n");
 	fflush(stdin);
 	fgets(password,20,stdin);
 	FILE *usuarios;
@@ -219,6 +221,25 @@ void Proceso_Sesion(){
 	sleep(2);
 	system("clear");
 	return;
+}
+
+void Mostrar_Catalogo(){
+	FILE *catalogo;
+	char texto[100];
+	int cuenta;
+	catalogo=fopen("Catalogo.txt","r");
+	if(catalogo==NULL){
+		printf("No se pudo abrir el archivo\n");
+		exit(1);
+	}
+	printf("*****Catalogo*****\n");
+	printf("PRODUCTO\tPRECIO\tExistencia \n");
+	fgets(texto,100,catalogo);
+	while(feof(catalogo)==0){
+		printf("%s",texto);
+		fgets(texto,100,catalogo);
+	}
+	if(fclose(catalogo)!=0)printf("Error al cerrar el archivo\n");
 }
 
 void Productos_Proveedores(){
@@ -289,7 +310,7 @@ int Buscar_Producto(){
 	float precio;
 	short int flag=0, line=0;
 
-	printf("Nombre del producto a buscar: \n");
+	printf("Ingrese el nombre del producto: \n");
 	fflush(stdin);
 	fgets(search,30,stdin); //Se llama 2 veces debido a que detecta el salto de linea anterior
 	scanf("%[^\n]%*c", search);
@@ -303,8 +324,8 @@ int Buscar_Producto(){
 		fflush(stdin);
 		if(strcmp(nombreP,search)==0){
 			system("clear");
-			printf("Producto Existente.\n");
-			printf("producto: nombre:%s, precio:$%f, existencia:%d \n\n",nombreP, precio, cantidad );
+			printf("\t\t\tProducto encontrado.\n");
+			printf("\t producto:%s, precio:$%f, existencia:%d \n\n",nombreP, precio, cantidad );
 			flag = 1;
 			break;
 		}
@@ -378,17 +399,47 @@ void Actualizar_Producto(){
 	return;
 }
 
+void Guardar_Ticket(char original[30]){
+	char newFile[30], ch;
+	printf("Nombre para el archivo de este nuevo ticket: ");
+	fflush(stdin);
+	fgets(newFile,30,stdin); //Se llama 2 veces debido a que detecta el salto de linea anterior
+	fgets(newFile,30,stdin);
+	FILE *ptrFile, *ptrFileNew;
+	ptrFile = fopen(original, "r");
+	ptrFileNew = fopen(newFile, "w");
+
+	if(ptrFile == NULL){
+		printf("Error al abrir el archivo\n");
+		exit(1);
+	}
+	if(ptrFileNew == NULL){
+		printf("Error al abrir el archivo\n");
+		exit(1);
+	}
+
+	while( ( ch = fgetc(ptrFile) ) != EOF )
+      fputc(ch, ptrFileNew);
+
+  	fclose(ptrFile);
+	fclose(ptrFileNew);
+	remove(original);	//eliminamos archivo original
+}
+
 void Agregar_Carrito(){
 	int add = 1;
 	int tot_productos_carrito=0;
 	FILE *ptrFile, *ptrFileCopy, *ptrFileCarrito;
 	
 	do{
+		Mostrar_Catalogo();
+		printf("\n");
 		short int line = Buscar_Producto();		//busca en que línea se encuentra el producto a agregar
 		short int totLineas = Total_Lineas();	//total de productos en la lista
 
 		if(line == 0){
 			printf("Ese producto no existe. Intenta nuevamente \n");
+			add=1;
 			continue;
 		}
 
@@ -438,12 +489,16 @@ void Agregar_Carrito(){
 		printf("2. No\n");
 		scanf("%d", &add);
 	}while(add == 1);
+
 	double tot = Total_Ticket(tot_productos_carrito);
-	printf("\n \t Total: $ %lf \n", tot);
+	printf("\n \t Total a pagar: $ %lf \n", tot);
 
 	ptrFileCarrito = fopen("Carrito.txt", "a");
 	fprintf(ptrFileCarrito, "\n TOTAL: %lf ", tot);
 	fclose(ptrFileCarrito);
+
+	printf("Vamos a guardar el ticket: \n");
+	Guardar_Ticket("Carrito.txt");
 
 }
 
