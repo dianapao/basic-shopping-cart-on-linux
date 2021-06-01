@@ -1,0 +1,6 @@
+colores mapita, 23.000000
+papitas, 12.000000
+
+ TOTAL: 35.000000 papitas, 12.000000
+
+ TOTAL: 23.000000 
