@@ -3,4 +3,4 @@ paletas rojas, 1.000000, 7
 colores mapita, 23.000000, 13
 manzanas, 3.000000, 7
 televisiones, 4000.000000, 6
-juego mario bros, 100.000000, 77
+juego mario bros, 100.000000, 76
